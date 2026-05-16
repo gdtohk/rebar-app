@@ -15,16 +15,12 @@
         .form-group { margin-bottom: 20px; }
         label.section-title { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; color: #34495e; }
         
-        /* 统一下拉框样式 */
         select { width: 100%; padding: 12px; border: 1px solid #bdc3c7; border-radius: 6px; background-color: #fcfcfc; color: #2c3e50; appearance: none; font-size: 16px; font-weight: 500;}
         
-        /* 块状按键群组通用样式 */
         .pill-group { display: grid; gap: 10px; }
-        .grid-4 { grid-template-columns: repeat(4, 1fr); } /* 4列排版用于直径 */
-        .grid-3 { grid-template-columns: repeat(3, 1fr); } /* 3列排版用于版本 */
-        .grid-2 { grid-template-columns: repeat(2, 1fr); } /* 2列排版用于粘结条件 */
+        .grid-4 { grid-template-columns: repeat(4, 1fr); } 
+        .grid-3 { grid-template-columns: repeat(3, 1fr); } 
         
-        /* 隐藏原生单选框，美化Label */
         .pill-group input[type="radio"] { display: none; }
         .pill-group label {
             background: #fff;
@@ -36,10 +32,9 @@
             color: #34495e;
             cursor: pointer;
             transition: all 0.2s ease;
-            user-select: none; /* 防止快速连按时选中文本 */
+            user-select: none; 
         }
         
-        /* 选中后的高亮状态 */
         .pill-group input[type="radio"]:checked + label {
             background: #2c3e50;
             color: #fff;
@@ -48,9 +43,10 @@
             box-shadow: 0 2px 6px rgba(44, 62, 80, 0.3);
         }
 
-        .result-box { margin-top: 25px; padding: 15px; border-radius: 8px; text-align: center; }
-        .tal-box { background-color: #e8f4fd; border: 2px solid #b6dcf9; margin-bottom: 12px; }
-        .tll-box { background-color: #eef9e8; border: 2px solid #c3e6b3; }
+        .result-box { margin-top: 15px; padding: 15px; border-radius: 8px; text-align: center; }
+        .tal-box { background-color: #e8f4fd; border: 2px solid #b6dcf9; }
+        .tll-good-box { background-color: #eef9e8; border: 2px solid #c3e6b3; }
+        .tll-poor-box { background-color: #fcf0e4; border: 2px solid #f6cda0; }
         .result-title { font-size: 14px; font-weight: bold; color: #555; margin-bottom: 5px; }
         .result-value { font-size: 36px; font-weight: 900; color: #2c3e50; }
         .unit { font-size: 16px; font-weight: normal; color: #7f8c8d; }
@@ -96,22 +92,19 @@
         </div>
     </div>
 
-    <div class="form-group">
-        <label class="section-title">粘结条件 (η1):</label>
-        <div class="pill-group grid-2">
-            <input type="radio" name="bond" id="b_good" value="good" checked><label for="b_good">良好 (Good)</label>
-            <input type="radio" name="bond" id="b_poor" value="poor"><label for="b_poor">较差 (Poor)</label>
-        </div>
-    </div>
-
     <div class="result-box tal-box">
         <div class="result-title">T.A.L. (受拉锚固长度)</div>
         <div class="result-value"><span id="tal_res">0</span> <span class="unit">mm</span></div>
     </div>
 
-    <div class="result-box tll-box">
-        <div class="result-title">T.L.L. (受拉搭接长度)</div>
-        <div class="result-value"><span id="tll_res">0</span> <span class="unit">mm</span></div>
+    <div class="result-box tll-good-box">
+        <div class="result-title">T.L.L. 良好 (Good Bond)</div>
+        <div class="result-value"><span id="tll_good_res">0</span> <span class="unit">mm</span></div>
+    </div>
+
+    <div class="result-box tll-poor-box">
+        <div class="result-title">T.L.L. 较差 (Poor Bond)</div>
+        <div class="result-value"><span id="tll_poor_res">0</span> <span class="unit">mm</span></div>
     </div>
 </div>
 
@@ -144,32 +137,33 @@
 
     function calculate() {
         const grade = document.getElementById('grade').value;
-        // 获取点击选中的值
         const d = document.querySelector('input[name="diameter"]:checked').value;
         const version = document.querySelector('input[name="version"]:checked').value;
-        const bond = document.querySelector('input[name="bond"]:checked').value;
 
         const base_val = data_base[grade][d];
         const val_50 = data_50[grade][d];
         const val_100 = data_100[grade][d];
 
+        // T.A.L 计算
         document.getElementById('tal_res').innerText = Math.round(base_val * 0.7);
 
-        let tll = 0;
-        if (bond === 'poor') {
-            if (version === 'base') tll = base_val;
-            else if (version === 'adv50') tll = val_50;
-            else tll = val_100;
-        } else {
-            if (version === 'base') tll = Math.round(base_val * 0.7);
-            else if (version === 'adv50') tll = Math.round(base_val * 0.98);
-            else tll = Math.round(base_val * 1.05);
-        }
+        // 良好 T.L.L 计算
+        let tll_good = 0;
+        if (version === 'base') tll_good = Math.round(base_val * 0.7);
+        else if (version === 'adv50') tll_good = Math.round(base_val * 0.98);
+        else tll_good = Math.round(base_val * 1.05);
         
-        document.getElementById('tll_res').innerText = tll;
+        document.getElementById('tll_good_res').innerText = tll_good;
+
+        // 较差 T.L.L 计算
+        let tll_poor = 0;
+        if (version === 'base') tll_poor = base_val;
+        else if (version === 'adv50') tll_poor = val_50;
+        else tll_poor = val_100;
+
+        document.getElementById('tll_poor_res').innerText = tll_poor;
     }
 
-    // 绑定事件实时更新：现在监听所有的 select 和 radio input 变化
     document.querySelectorAll('select, input[type="radio"]').forEach(el => el.onchange = calculate);
     calculate();
 
