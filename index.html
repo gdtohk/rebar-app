@@ -135,6 +135,11 @@
         '50': {10:830, 12:900, 16:1190, 20:1490, 25:1860, 32:2370, 40:3230, 50:4520}
     };
 
+    // 辅助函数：个位数非 0 则向上进 1 到十位数
+    function roundUpToTen(num) {
+        return Math.ceil(num / 10) * 10;
+    }
+
     function calculate() {
         const grade = document.getElementById('grade').value;
         const d = document.querySelector('input[name="diameter"]:checked').value;
@@ -144,24 +149,24 @@
         const val_50 = data_50[grade][d];
         const val_100 = data_100[grade][d];
 
-        // T.A.L 计算
-        document.getElementById('tal_res').innerText = Math.round(base_val * 0.7);
+        // T.A.L 计算并进位
+        document.getElementById('tal_res').innerText = roundUpToTen(base_val * 0.7);
 
-        // 良好 T.L.L 计算
+        // 良好 T.L.L 计算并进位
         let tll_good = 0;
-        if (version === 'base') tll_good = Math.round(base_val * 0.7);
-        else if (version === 'adv50') tll_good = Math.round(base_val * 0.98);
-        else tll_good = Math.round(base_val * 1.05);
+        if (version === 'base') tll_good = base_val * 0.7;
+        else if (version === 'adv50') tll_good = base_val * 0.98;
+        else tll_good = base_val * 1.05;
         
-        document.getElementById('tll_good_res').innerText = tll_good;
+        document.getElementById('tll_good_res').innerText = roundUpToTen(tll_good);
 
-        // 较差 T.L.L 计算
+        // 较差 T.L.L 计算并进位
         let tll_poor = 0;
         if (version === 'base') tll_poor = base_val;
         else if (version === 'adv50') tll_poor = val_50;
         else tll_poor = val_100;
 
-        document.getElementById('tll_poor_res').innerText = tll_poor;
+        document.getElementById('tll_poor_res').innerText = roundUpToTen(tll_poor);
     }
 
     document.querySelectorAll('select, input[type="radio"]').forEach(el => el.onchange = calculate);
