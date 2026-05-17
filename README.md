@@ -1,5 +1,4 @@
-# 📏 Rebar Splice Length Reference APP (钢筋驳接长度查表 APP)
-
+# 📏 Rebar Splice Length Reference APP
 [English](#english) | [中文](#中文-1)
 
 ---
@@ -46,7 +45,7 @@ The application derives final lengths by cross-referencing the base matrix array
 
 ---
 
-## 中文
+## 中文(钢筋驳接长度查表 APP)
 
 专为建筑行业钢筋拆图师（Rebar Detailer）与工料测量师（QS）量身打造的轻量化、支持离线使用的渐进式 Web 应用（PWA）。本应用提供受拉锚固长度（T.A.L.）与受拉搭接长度（T.L.L.）的即时、精准查询与计算，无需再繁琐地手动翻阅复杂工程图表。
 
